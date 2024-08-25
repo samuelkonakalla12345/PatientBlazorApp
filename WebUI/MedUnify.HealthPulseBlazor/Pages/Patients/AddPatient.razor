@@ -1,0 +1,107 @@
+﻿@page "/add-patient"
+
+@inject PatientAPIService PatientService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime _jsRuntime
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Add Patient</h4>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="@patient" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <InputText id="firstName" class="form-control" @bind-Value="patient.FirstName" />
+                                <ValidationMessage class="text-danger" For="@(() => patient.FirstName)" />
+                            </div>
+
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <InputText id="lastName" class="form-control" @bind-Value="patient.LastName" />
+                                <ValidationMessage class="text-danger" For="@(() => patient.LastName)" />
+
+                            </div>
+
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="mobileNumber" class="form-label">Mobile Number</label>
+                                <InputText id="mobileNumber" class="form-control" @bind-Value="patient.MobileNumber" />
+                                <ValidationMessage class="text-danger" For="@(() => patient.MobileNumber)" />
+
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <InputText id="address" class="form-control" @bind-Value="patient.Address" />
+                                <ValidationMessage class="text-danger" For="@(() => patient.Address)" />
+
+                            </div>
+
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="state" class="form-label">State</label>
+                                <InputText id="state" class="form-control" @bind-Value="patient.State" />
+                                <ValidationMessage class="text-danger" For="@(() => patient.State)" />
+
+                            </div>
+
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="city" class="form-label">City</label>
+                                <InputText id="city" class="form-control" @bind-Value="patient.City" />
+                                <ValidationMessage class="text-danger" For="@(() => patient.City)" />
+
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary me-3">Add</button>
+                                <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+                            </div>
+
+                        </div>
+                       
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    private PatientRM patient = new PatientRM();
+
+    private async Task HandleValidSubmit()
+    {
+        var response = await PatientService.AddPatientAsync(patient);
+
+
+        if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            var returnStatusRM = JsonSerializer.Deserialize<ReturnStatusResourseModel>(body);
+
+
+            await this._jsRuntime.InvokeVoidAsync("appScripts.showSweetAlertPopup",
+                             returnStatusRM.Status,
+                             returnStatusRM.Title, returnStatusRM.Message);
+        }
+        else if (response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            var patientRM = JsonSerializer.Deserialize<PatientRM>(body);
+            await this._jsRuntime.InvokeVoidAsync("appScripts.showSweetAlertPopup",
+                             "success",
+                             "Added New Patient", $"{patientRM.FirstName} - created successfully");
+            StateHasChanged();
+            NavigationManager.NavigateTo("/patients");
+        }
+    }
+
+
+    private void Cancel()   
+    {
+        NavigationManager.NavigateTo("/patients");
+    }
+}

@@ -1,0 +1,33 @@
+﻿@page "/pagenotfound"
+
+@inject IJSRuntime _jsRuntime
+@inject IConfiguration _config
+@inject NavigationManager _navManager
+
+
+
+<section class="min-vh-100 d-flex align-items-center pt-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 order-3 col-md-1 order-md-1 col-lg-12 order-lg-3">
+            </div>
+            <div class="col-12  order-3 col-md-1 order-md-3 col-lg-12 order-lg-3">
+            </div>
+            <div class="col-12 col-lg-6 my-auto order-2 order-md-4 order-lg-1">
+                <h1 class="display-1 text-bolder text-gradient text-danger">404!</h1>
+                <h2>Page not found</h2>
+                <p class="lead">We suggest you to go to the homepage while we solve this issue.</p>
+                <a href="@string.Format("")" class="btn btn-outline-primary mt-4">Go to Homepage</a>
+
+            </div>
+            <div class="col-lg-6 my-auto position-relative order-1 order-md-1 order-lg-2">
+               
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+   
+}
+

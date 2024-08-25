@@ -1,0 +1,100 @@
+﻿@page "/patients"
+@using MedUnify.ResourceModel.HealthPulse
+
+@inject PatientAPIService PatientService
+@inject IJSRuntime _jsRuntime
+
+@inherits BasePatients
+
+
+<Blazorise.Container Class="mt-1">
+    <div class="d-flex mb-1">
+        <h3 class="display-6 ms-auto">Patients List</h3>
+        <div class="ms-auto">
+            <a href="/add-patient" class="btn btn-success ms-auto mt-3"> Add Patient </a>
+        </div>
+        <div class="ms-auto">
+            <a href="/addVisit" class="btn btn-success ms-auto mt-3"> Add Visit </a>
+        </div>
+    </div>
+    <Blazorise.Row>
+        <Blazorise.Column>
+            @if (patients == null)
+            {
+                <div class="text-center">
+                    <Blazorise.Spinner Color="Color.Primary" />
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            }
+            else
+            {
+                <Blazorise.Table Responsive="true" Hoverable="true" Bordered="true" Striped="true">
+                    <Blazorise.TableHeader>
+                        <Blazorise.TableRow>
+                            <Blazorise.TableHeaderCell>First Name</Blazorise.TableHeaderCell>
+                            <Blazorise.TableHeaderCell>Last Name</Blazorise.TableHeaderCell>
+                            <Blazorise.TableHeaderCell>Mobile Number</Blazorise.TableHeaderCell>
+                            <Blazorise.TableHeaderCell>Actions</Blazorise.TableHeaderCell>
+                        </Blazorise.TableRow>
+                    </Blazorise.TableHeader>
+                    <Blazorise.TableBody>
+                        @foreach (var patient in patients)
+                        {
+                            <Blazorise.TableRow>
+                                <Blazorise.TableRowCell>@patient.FirstName</Blazorise.TableRowCell>
+                                <Blazorise.TableRowCell>@patient.LastName</Blazorise.TableRowCell>
+                                <Blazorise.TableRowCell>@patient.MobileNumber</Blazorise.TableRowCell>
+                                <Blazorise.TableRowCell>
+                                    <Blazorise.Button Color="Color.Info" @onclick="() => ToggleDetails(patient.PatientId)">
+                                        <Blazorise.Icon IconName="fas fa-info-circle" /> Details
+                                    </Blazorise.Button>
+                                    <Blazorise.Link To="@string.Concat("/edit-patient/" + @patient.PatientId)"
+                                        Class="btn btn-warning ms-2" Target="Target.Parent">
+                                        Edit
+                                    </Blazorise.Link>
+
+                                    @*  <Blazorise.Link Href="/edit-patient/@patient.PatientId" Class="btn btn-warning ms-2">
+                            <Blazorise.Icon IconName="fas fa-edit" /> Edit
+                            </Blazorise.Link> *@
+                                    <Blazorise.Button Color="Color.Danger" Class="ms-2" @onclick="() => ConfirmDelete(patient.PatientId)">
+                                        <Blazorise.Icon IconName="fas fa-trash-alt" /> Delete
+                                    </Blazorise.Button>
+                                </Blazorise.TableRowCell>
+                               
+
+                            </Blazorise.TableRow>
+
+                            if (_expandedPatientId == patient.PatientId)
+                            {
+                                <Blazorise.TableRow>
+                                    <Blazorise.TableRowCell ColSpan="4">
+                                        <PatientDetails Patient="patient" IsVisible="@(patient.PatientId == _expandedPatientId)" />
+                                    </Blazorise.TableRowCell>
+                                </Blazorise.TableRow>
+                            }
+                        }
+                    </Blazorise.TableBody>
+                </Blazorise.Table>
+            }
+        </Blazorise.Column>
+    </Blazorise.Row>
+
+    <DeletePatientConfirmation ShowDialog="showDeletePatientConfirmDialog"
+                               OnConfirm="DeletePatientConfirmed"
+                               OnCancel="CloseConfirmationDeleteDialog" />
+</Blazorise.Container>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAllPatientsAsync();
+    }
+
+
+    private void ToggleDetails(int patientId)
+    {
+        _expandedPatientId = patientId;
+        StateHasChanged();
+    }
+}

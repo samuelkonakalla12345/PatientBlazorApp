@@ -1,0 +1,75 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35027.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedUnify.Domain", "MedUnify.Domain\MedUnify.Domain.csproj", "{E6EA63EF-C736-406F-9599-AA1811574CD2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebAPI", "WebAPI", "{A23ED2AF-5A3B-4E32-8F94-5C76C10CDC08}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedUnify.AuthAPI", "Apis\MedUnify.AuthAPI\MedUnify.AuthAPI.csproj", "{2C144A20-2502-4199-B83F-C3C6CB22531F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{367F40C5-E3A1-4F1A-A06C-035FFFDFDF6D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebUI", "WebUI", "{1E17119C-E2D1-4628-83D3-F1FE236B0259}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{6E5407DA-0CB4-4360-9B03-D4D1794BFA89}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\MedUnifyDB.mdf = ..\..\MedUnifyDB.mdf
+		..\..\MedUnifyDB_log.ldf = ..\..\MedUnifyDB_log.ldf
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedUnify.HealthPulseAPI", "Apis\MedUnify.HealthPulseAPI\MedUnify.HealthPulseAPI.csproj", "{3364D7E9-5A41-4209-9651-CD2EF2172C3D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedUnify.HealthPulseBlazor", "WebUI\MedUnify.HealthPulseBlazor\MedUnify.HealthPulseBlazor.csproj", "{48C64E3A-0B75-49A1-A310-97BFA451EA5B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedUnify.Infrastructure", "Common\MedUnify.Infrastructure\MedUnify.Infrastructure.csproj", "{0F89BA65-09AC-4A5D-B626-00AC30E9EE70}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedUnify.ResourceModel", "Common\MedUnify.ResourceModel\MedUnify.ResourceModel.csproj", "{8F21F35D-6E4B-441D-BB9C-A477E74B5138}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E6EA63EF-C736-406F-9599-AA1811574CD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6EA63EF-C736-406F-9599-AA1811574CD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6EA63EF-C736-406F-9599-AA1811574CD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6EA63EF-C736-406F-9599-AA1811574CD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C144A20-2502-4199-B83F-C3C6CB22531F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C144A20-2502-4199-B83F-C3C6CB22531F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C144A20-2502-4199-B83F-C3C6CB22531F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C144A20-2502-4199-B83F-C3C6CB22531F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3364D7E9-5A41-4209-9651-CD2EF2172C3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3364D7E9-5A41-4209-9651-CD2EF2172C3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3364D7E9-5A41-4209-9651-CD2EF2172C3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3364D7E9-5A41-4209-9651-CD2EF2172C3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48C64E3A-0B75-49A1-A310-97BFA451EA5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48C64E3A-0B75-49A1-A310-97BFA451EA5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48C64E3A-0B75-49A1-A310-97BFA451EA5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48C64E3A-0B75-49A1-A310-97BFA451EA5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F89BA65-09AC-4A5D-B626-00AC30E9EE70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F89BA65-09AC-4A5D-B626-00AC30E9EE70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F89BA65-09AC-4A5D-B626-00AC30E9EE70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F89BA65-09AC-4A5D-B626-00AC30E9EE70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F21F35D-6E4B-441D-BB9C-A477E74B5138}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F21F35D-6E4B-441D-BB9C-A477E74B5138}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F21F35D-6E4B-441D-BB9C-A477E74B5138}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F21F35D-6E4B-441D-BB9C-A477E74B5138}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E6EA63EF-C736-406F-9599-AA1811574CD2} = {367F40C5-E3A1-4F1A-A06C-035FFFDFDF6D}
+		{2C144A20-2502-4199-B83F-C3C6CB22531F} = {A23ED2AF-5A3B-4E32-8F94-5C76C10CDC08}
+		{3364D7E9-5A41-4209-9651-CD2EF2172C3D} = {A23ED2AF-5A3B-4E32-8F94-5C76C10CDC08}
+		{48C64E3A-0B75-49A1-A310-97BFA451EA5B} = {1E17119C-E2D1-4628-83D3-F1FE236B0259}
+		{0F89BA65-09AC-4A5D-B626-00AC30E9EE70} = {367F40C5-E3A1-4F1A-A06C-035FFFDFDF6D}
+		{8F21F35D-6E4B-441D-BB9C-A477E74B5138} = {367F40C5-E3A1-4F1A-A06C-035FFFDFDF6D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F26A3488-DDF3-4BA8-A188-93D8BDD48EFE}
+	EndGlobalSection
+EndGlobal

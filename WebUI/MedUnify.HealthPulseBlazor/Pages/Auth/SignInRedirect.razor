@@ -1,0 +1,11 @@
+﻿@page "/signinredirect"
+
+@inject NavigationManager _navManager
+
+@code {  
+
+    protected override async Task OnInitializedAsync()
+    {
+        _navManager.NavigateTo("login");             
+    }     
+}

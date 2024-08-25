@@ -1,0 +1,114 @@
+﻿@page "/login"
+
+@inject TokenAuthStateProvider _authStateProvider
+@inject NavigationManager Navigation
+@inject IJSRuntime _jsRuntime
+
+@inherits LoginBase
+
+
+@if (IsBusy)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <Container Class="d-flex justify-content-center align-items-center min-vh-100">
+        <Card Class="shadow-sm" Style="max-width: 400px; width: 100%;">
+            <CardHeader Background="Background.Primary" TextColor="TextColor.White">
+                <CardTitle>
+                    <h2 class="text-center">Login</h2>
+                </CardTitle>
+            </CardHeader>
+            <CardBody>
+
+
+                <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
+                    <DataAnnotationsValidator />
+
+                    <div class="form-group mb-3">
+                        <label for="clientId">Client ID</label>
+                        <InputText id="clientId" class="form-control" @bind-Value="loginModel.ClientId" placeholder="Enter your client ID" aria-describedby="clientIdHelp" />
+                        <ValidationMessage class="text-danger" For="@(() => loginModel.ClientId)" />
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label for="clientSecret">Client Secret</label>
+                        <InputText id="clientSecret" type="password" class="form-control" @bind-Value="loginModel.ClientSecret" placeholder="Enter your client secret" aria-describedby="clientSecretHelp" />
+                        <ValidationMessage class="text-danger" For="@(() => loginModel.ClientSecret)" />
+                    </div>
+
+                    <div class="form-group mt-3 mb-3 text-center">
+
+                        <Blazorise.Bootstrap5.Button Color="Color.Primary"
+                                                     Type="ButtonType.Submit"
+                                                     Size="Size.Large"
+                                                     Loading="@isSubmitting">Login</Blazorise.Bootstrap5.Button>
+
+
+                        @if (isSubmitting)
+                        {
+                            <span class="ms-2 spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        }
+                    </div>
+                </EditForm>
+            </CardBody>
+        </Card>
+    </Container>
+}
+
+@code {
+    private TokenRequestResourceModel loginModel = new TokenRequestResourceModel();
+    private bool isSubmitting = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (await _authStateProvider.IsAuthenticatedAsync())
+        {
+            // Redirect to the homepage if already authenticated
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+
+            isSubmitting = true;
+            SetBusy(true);
+
+            bool isAuthenticated = await _authStateProvider.LoginAsync(loginModel.ClientId, loginModel.ClientSecret);
+
+            SetBusy(false);
+
+            if (isAuthenticated)
+            {
+
+                //await this._jsRuntime.InvokeVoidAsync("appScripts.redirectTo", "/");
+
+                await this._jsRuntime.InvokeVoidAsync("appScripts.showSweetToastNotification",
+                                            "success",
+                                            "Logged in successfully",
+                                            "2500");
+
+                Navigation.NavigateTo("/");
+                StateHasChanged();
+
+            }
+            else
+            {
+                // Handle login failure (e.g., show an error message)
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle login failure (e.g., show an error message)
+            Console.WriteLine($"Login failed: {ex.Message}");
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}

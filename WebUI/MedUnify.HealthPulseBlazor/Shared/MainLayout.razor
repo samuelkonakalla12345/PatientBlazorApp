@@ -1,0 +1,16 @@
+﻿@using MedUnify.HealthPulseBlazor.Pages.Auth
+@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+
+<div class="">
+    <NavMenu />   
+    <main >
+        <AuthorizeView>
+            <Authorized>
+                <LoginDetails />
+            </Authorized>
+        </AuthorizeView>       
+
+        @Body
+    </main>
+</div>

@@ -1,0 +1,155 @@
+﻿@inject HttpClient Http
+@inject PatientAPIService PatientService
+@inject IJSRuntime _jsRuntime
+@inject VisitAPIService VisitService
+@inherits BasePatients
+@inject NavigationManager Navigation
+@inject ProgressNotesAPIService progressAPI
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Notes</h4>
+                <button type="button" class="close"
+                @onclick="@Cancel">
+                    &times;
+                </button>
+            </div>
+           
+                <div class="modal-body">
+                    @foreach(var note in progressNotes)
+                    {
+                    <div class="form-group mb-2">
+                        <label>Section Name:</label>
+                        <input type="text" class="form-control"  @bind="@note.SectionName" />
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <label>Section Text:</label>
+                        <input type="text" class="form-control"  @bind="@note.SectionText" />
+                    </div>
+                    <div class="form-group mb-2">
+                        <label>Height</label>
+                        <input type="text" class="form-control" @bind="@note.Height" />
+                    </div>
+                    <div class="form-group mb-2">
+                        <label>Weight</label>
+                        <input type="text" class="form-control" @bind="@note.Weight" />
+                    </div>
+                    <div class="form-group mb-2">
+                        <label>Temperature</label>
+                        <input type="text" class="form-control" @bind="@note.Temperature" />
+                    </div>
+                    <button type="button" class="btn btn-primary"
+                    @onclick="()=>RemoveItem(note)" >
+                        Remove
+                    </button>
+
+                    }
+                    <div>
+                        
+                    <div class="form-group mt-2">
+
+                        <button type="button" class="btn btn-primary"
+                @onclick="@AddItem">
+                    Add Note
+                </button>
+                     
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-primary"
+                @onclick=@SaveVisit>
+                    Save
+                </button>
+                <button type="button" class="btn btn-warning"
+                @onclick="@Cancel">
+                    Don't Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    @using MedUnify.Domain.HealthPulse;
+
+
+
+        [Parameter] public EventCallback<bool> OnClose { get; set; }
+        [Parameter] public int  PatientId { get; set; }
+        [Parameter] public int VisitId { get; set; }
+
+        [Parameter]
+        public EventCallback<string> OnClickCallback { get; set; }
+
+
+    private string sectionName = "";
+    private string sectionText = "";
+
+    private Visit visitItem = new Visit();
+
+
+
+    private List<ProgressNote> progressNotes = new List<ProgressNote> { new ProgressNote() };
+
+    private void AddItem()
+    {
+
+        progressNotes.Add(new ProgressNote());
+
+        StateHasChanged();
+    }
+
+
+
+    private void RemoveItem(ProgressNote note)
+
+    {
+        progressNotes.Remove(note);
+        StateHasChanged();
+    }
+    private Task Cancel()
+    {
+        sectionName = "";
+        sectionText = "";
+        return OnClose.InvokeAsync(false);
+    }
+    private async Task SaveVisit()
+    {
+
+        // await VisitService.AddVisitAsync(newVisit);
+
+        foreach (var item in progressNotes)
+        {
+            item.VisitId = VisitId;
+        }
+
+        // visitItem.VisitDate = DateTime.Now;
+        // visitItem.PatientId = PatientId;
+        // visitItem.ProgressNotes = progressNotes;
+
+        foreach (var item in progressNotes)
+        {
+            var response = await progressAPI.AddProgressNotesAsync(item);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            StateHasChanged();
+        }
+        else
+        {
+            // Handle error case
+        }
+        }
+        await OnClose.InvokeAsync(true);
+        await OnClickCallback.InvokeAsync();
+
+    }
+    public enum Category
+    {
+        SaveNot,
+    }
+}

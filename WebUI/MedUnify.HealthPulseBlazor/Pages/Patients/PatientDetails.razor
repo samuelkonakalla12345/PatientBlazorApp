@@ -1,0 +1,35 @@
+﻿@code {
+    [Parameter] public PatientRM Patient { get; set; }
+    [Parameter] public bool IsVisible { get; set; }
+}
+
+<Blazorise.Collapse Visible="IsVisible">
+    <Blazorise.Card Class="mt-0">
+        <Blazorise.CardHeader Class="text-center">
+            <Blazorise.CardTitle Class="h5">Patient Details</Blazorise.CardTitle>
+        </Blazorise.CardHeader>
+        <Blazorise.CardBody>
+            <Blazorise.Row>
+                <Blazorise.Column>
+                    <strong>Address:</strong> @Patient.Address
+                </Blazorise.Column>
+            </Blazorise.Row>
+            <Blazorise.Row>
+                <Blazorise.Column>
+                    <strong>City:</strong> @Patient.City
+                </Blazorise.Column>
+                <Blazorise.Column>
+                    <strong>State:</strong> @Patient.State
+                </Blazorise.Column>
+            </Blazorise.Row>
+            <Blazorise.Row>
+                <Blazorise.Column>
+                    <strong>Created At:</strong> @Patient.CreatedAt.ToString("g")
+                </Blazorise.Column>
+                <Blazorise.Column>
+                    <strong>Updated At:</strong> @Patient.UpdatedAt.ToString("g")
+                </Blazorise.Column>
+            </Blazorise.Row>
+        </Blazorise.CardBody>
+    </Blazorise.Card>
+</Blazorise.Collapse>

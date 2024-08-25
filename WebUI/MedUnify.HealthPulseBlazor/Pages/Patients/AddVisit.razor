@@ -1,0 +1,268 @@
+﻿@page "/addVisit"
+
+
+@inject HttpClient Http
+@inject PatientAPIService PatientService
+@inject IJSRuntime _jsRuntime
+@inject VisitAPIService VisitService
+@inherits BasePatients
+@inject NavigationManager Navigation
+@inject ProgressNotesAPIService progressAPIService
+<PageTitle>Add Visit</PageTitle>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <select class="form-select" value="@selectedPatientId" @onchange="OnPatientSelectionChanged">
+            <option value="0">Select Patient</option>
+            @foreach (var patient in patients)
+            {
+                <option value="@patient.PatientId">@patient.FirstName</option>
+            }
+        </select>
+    </div>
+    @if (selectedPatientId != 0)
+    {
+       
+        @if (visits != null && visits.Any())
+        {
+            <h3>Visit Details</h3>
+
+            foreach (var visit in visits)
+            {
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <p>Visit ID: @visit.VisitId</p>
+                            <p>Patient ID: @selectedPatientId</p>
+                            <p>Visit Date: @visit.VisitDate.ToShortDateString()</p>
+
+                            <h5>Progress Notes</h5>
+                            @if (visit.ProgressNotes != null && visit.ProgressNotes.Any())
+                            {
+
+                                <table class="table table-borderless col-md-6">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Section Name</th>
+                                            <th scope="col">Section Text</th>
+                                            <th scope="col">Height</th>
+                                            <th scope="col">Weight</th>
+                                            <th scope="col">Temperature</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var note in visit.ProgressNotes)
+                                        {
+                                        <tr>
+                                                <td>@note.SectionName</td>
+                                                <td> @note.SectionText</td>
+                                                <td>@note.Height</td>
+                                                <td> @note.Weight</td>
+                                                <td>@note.Temperature</td>
+                                        </tr>
+                                        }
+                                        </tbody>
+                                </table>
+                            }
+                            <div class="col-md-2">
+                                <button class="btn btn-primary" @onclick='()=>OpenDialog(visit.VisitId,"test")'>
+                                    Add Progress Note
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="mt-3">@displayMsg</p>
+        }
+    }
+
+</div>
+
+
+
+@if (selectedPatientId != 0)
+    {
+    <h3>Add Visit</h3>
+<EditForm Model="newVisit" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label for="Date" class="form-label">Date</label>
+        <InputDate id="Date" class="form-control" @bind-Value="newVisit.VisitDate" />
+    </div>
+ @*    @foreach (var progressNote in newVisit.ProgressNotes)
+
+    {
+        <div class="mb-3">
+            <InputTextArea class="form-control" @bind-Value="progressNote.Note" placeholder="Enter Progress Note" />
+        </div>
+    }
+
+    <button type="button" class="btn btn-secondary" @onclick="AddProgressNote">Add Another Note</button>
+ *@
+    <button type="submit" class="btn btn-primary">Add Visit</button>
+</EditForm>
+    }
+
+@if (dialogIsOpen)
+{
+    <AddProgressNotePopup OnClose="@OnDialogClose" VisitId="@VisitId" OnClickCallback="@RefreshList"></AddProgressNotePopup>
+}
+
+@code {
+    private int selectedPatientId;
+    @using MedUnify.Domain.HealthPulse;
+
+    private List<PatientRM>? patients = new List<PatientRM>();
+    Patient patientRM = new Patient();
+
+    private List<Visit>? visits = new List<Visit>();
+
+    private bool dialogIsOpen = false;
+    private string displayMsg = "";
+
+
+
+    private int VisitId;
+
+
+
+
+
+    [Parameter]
+
+    public int PatientId { get; set; }
+
+
+
+    private Visit newVisit = new Visit { VisitDate = DateTime.Now };
+
+
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        patients = await LoadPatients();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+
+        await LoadSinglePatient(selectedPatientId);
+        //newVisit.Patient = patientRM;
+        newVisit.PatientId = selectedPatientId;
+        newVisit.Status = "Visited";
+        await VisitService.AddVisitAsync(newVisit);
+
+       await RefreshList();
+        // Navigation.NavigateTo($"/patientdetails/{PatientId}");
+    }
+
+
+
+
+
+    private async Task<List<PatientRM>>? LoadPatients()
+
+    {
+
+        patients=await PatientService.GetPatientsAsync();
+
+
+        return patients;
+
+    }
+
+    private async Task<PatientRM>? LoadSinglePatient(int patientid)
+    {
+        var obj= await PatientService.GetPatientByIdAsync(patientid);
+        patientRM.PatientId = patientid;
+        patientRM.State = obj.State;
+        patientRM.MobileNumber = obj.MobileNumber;
+        patientRM.Address = obj.Address;
+        patientRM.City = obj.City;
+        patientRM.CreatedAt = obj.CreatedAt;
+        patientRM.FirstName = obj.FirstName;
+        patientRM.LastName = obj.LastName;
+        patientRM.OrganizationId = obj.OrganizationId;
+        patientRM.IsDeleted = obj.IsDeleted;
+        patientRM.UpdatedAt = obj.UpdatedAt;
+        return obj;
+
+    }
+
+    private async Task LoadVisits(int patientId)
+    {
+
+
+        var obj= await VisitService.GetVisitsByPatientIdAsync(patientId);
+
+        foreach (var item in obj)
+
+        {
+            var progressnotes = await progressAPIService.GetProgressnotesByVisitIdAsync(item.VisitId);
+
+            foreach (var note in progressnotes)
+
+            {
+
+                item.ProgressNotes.Add(note);
+
+            }
+        }
+
+        visits =  obj.ToList<Visit>();
+        //visits = await Http.GetFromJsonAsync<List<Visit>>("https://localhost:7228/api/PatientVisit?patientId=" + selectedPatientId);
+
+
+
+    }
+    private void OpenDialog(int id, string title)
+    {
+
+        VisitId = id;
+
+        dialogIsOpen = true;
+    }
+    private async Task OnDialogClose(bool isOk)
+    {
+        if (isOk)
+        {
+            await Task.CompletedTask;
+        }
+        dialogIsOpen = false;
+    }
+
+    private async Task RefreshList()
+    {
+
+         LoadVisits(selectedPatientId);
+
+        StateHasChanged();
+    }
+
+    private async Task OnPatientSelectionChanged(ChangeEventArgs e)
+    {
+        
+        displayMsg = "Loading....";
+        selectedPatientId = Convert.ToInt32(e.Value);
+
+     await    LoadVisits(selectedPatientId);
+
+        if (visits == null || visits.Count == 0)
+        {
+            displayMsg = "No data available for selected patient!!";
+        }
+      
+        StateHasChanged();
+    }
+    private void OpenAddProgressNotePopup()
+    {
+        // Implement the logic to open the add progress note popup
+    }
+}

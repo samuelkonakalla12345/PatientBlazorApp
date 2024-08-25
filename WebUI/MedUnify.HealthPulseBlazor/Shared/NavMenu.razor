@@ -1,0 +1,63 @@
+﻿@inject TokenAuthStateProvider AuthenticationService
+@inject NavigationManager Navigation
+@inject IJSRuntime _jsRuntime
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary bg-light" style="box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">MedUnify Health Pulse</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                @if (isAuthenticated)
+                {
+                    <li class="nav-item me-4 ">
+                        <a class="btn btn-primary" href="\Patients">Patients</a>
+                    </li>
+                }
+                else
+                {
+
+                }
+            </ul>
+            <form class="d-flex" role="search">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    @if (isAuthenticated)
+                    {
+                        @* <li class="nav-item me-2">
+                           <div>
+                                <p class="p-0 m-0">123</p>
+                                <p class="p-0 m-0">123</p>
+                           </div>
+                        </li> *@
+
+                        <li class="nav-item me-2">
+                            <button class="btn btn-danger" type="submit" @onclick="Logout"> Logout </button>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item me-2"><a class="nav-link" href="\login">Login</a></li>
+                    }
+                </ul>
+
+            </form>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private bool isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isAuthenticated = await AuthenticationService.IsAuthenticatedAsync();
+    }
+
+    private async Task Logout()
+    {
+        await AuthenticationService.LogoutAsync();
+        await this._jsRuntime.InvokeVoidAsync("appScripts.redirectTo", "/login");        
+    }
+}

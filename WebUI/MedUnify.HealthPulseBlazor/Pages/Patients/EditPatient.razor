@@ -1,0 +1,105 @@
+﻿@page "/edit-patient/{PatientId:int}"
+
+
+@inject PatientAPIService PatientService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime _jsRuntime
+
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Edit Patient</h4>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="@patient" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />                        
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <InputText id="firstName" class="form-control" @bind-Value="patient.FirstName" />
+                            </div>
+
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <InputText id="lastName" class="form-control" @bind-Value="patient.LastName" />
+                            </div>
+
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="mobileNumber" class="form-label">Mobile Number</label>
+                                <InputText id="mobileNumber" class="form-control" @bind-Value="patient.MobileNumber" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <InputText id="address" class="form-control" @bind-Value="patient.Address" />
+                            </div>
+
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="state" class="form-label">State</label>
+                                <InputText id="state" class="form-control" @bind-Value="patient.State" />
+                            </div>
+
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="city" class="form-label">City</label>
+                                <InputText id="city" class="form-control" @bind-Value="patient.City" />
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary me-3">Save</button>
+                                <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+                            </div>
+
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int PatientId { get; set; }
+
+    private PatientRM patient;
+
+    protected override async Task OnInitializedAsync()
+    {
+        patient = await PatientService.GetPatientByIdAsync(PatientId);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var response = await PatientService.UpdatePatientAsync(patient.PatientId, patient);
+
+
+        if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            var returnStatusRM = JsonSerializer.Deserialize<ReturnStatusResourseModel>(body);
+
+
+            await this._jsRuntime.InvokeVoidAsync("appScripts.showSweetAlertPopup",
+                             returnStatusRM.Status,
+                             returnStatusRM.Title, returnStatusRM.Message);
+        }
+        else if (response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            var returnStatusRM = JsonSerializer.Deserialize<ReturnStatusResourseModel>(body);
+            await this._jsRuntime.InvokeVoidAsync("appScripts.showSweetAlertPopup",
+                             returnStatusRM.Status,
+                             returnStatusRM.Title, returnStatusRM.Message);
+            StateHasChanged();
+            NavigationManager.NavigateTo("/patients");
+        }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/patients");
+    }
+}
